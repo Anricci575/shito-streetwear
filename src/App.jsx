@@ -87,53 +87,57 @@ function App() {
     jp: <>厳選されたヘッドウェア。<br/><span className="italic opacity-80">一点物のピース。</span></>
   };
   
-  // Física de inercia líquida (ultra-smooth scroll spring)
-  const smoothScrollY = useSpring(scrollY, { stiffness: 45, damping: 25, restDelta: 0.001 });
-  const sharpOpacity = useTransform(smoothScrollY, [0, 950], [1, 0]);
+  // Física de inercia optimizada para móvil y desktop (60fps)
+  const smoothScrollY = useSpring(scrollY, { stiffness: 90, damping: 28, restDelta: 0.001 });
+  const sharpOpacity = useTransform(smoothScrollY, [0, 850], [1, 0]);
 
   const handleBuy = (capName) => {
     const msg = `¡Hola Richi! 🌱 Quiero apartar la gorra ${capName} de la colección SHi-TO.`;
     window.open(`https://wa.me/584161437190?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
-  // Variantes de animación ultra-suaves con desenfoque progresivo de 1.8 segundos
+  // Variantes de animación aceleradas por GPU nativa (sin filtros pesados en móvil)
   const fadeUpSmooth = {
-    hidden: { opacity: 0, y: 50, filter: "blur(8px)" },
+    hidden: { opacity: 0, y: 30 },
     visible: { 
       opacity: 1, 
       y: 0, 
-      filter: "blur(0px)",
-      transition: { duration: 1.8, ease: [0.16, 1, 0.3, 1] } 
+      transition: { duration: 1.0, ease: [0.16, 1, 0.3, 1] } 
     }
   };
 
   return (
     <div className="min-h-screen font-sans text-white bg-[#0a0f0d] relative overflow-x-hidden">
       
-      {/* --- BACKGROUND: DYNAMIC SCROLL BLUR --- */}
-      <div className="fixed inset-0 z-0 pointer-events-none">
+      {/* --- BACKGROUND: OPTIMIZED DYNAMIC SCROLL BLUR --- */}
+      <div className="fixed inset-0 z-0 pointer-events-none transform-gpu">
+        {/* Capa 2: Versión difuminada ligera con aceleración por hardware */}
         <div 
           className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ 
-            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg?v=1")`, 
-            filter: "blur(20px) contrast(1.05) saturate(1.1)"
+            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg")`, 
+            filter: "blur(14px)",
+            transform: "translateZ(0)"
           }}
         ></div>
 
+        {/* Capa 1: Imagen nítida con opacidad reactiva acelerada por GPU */}
         <motion.div 
           className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ 
-            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg?v=1")`, 
-            filter: "contrast(1.05) saturate(1.1)",
-            opacity: sharpOpacity
+            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg")`, 
+            opacity: sharpOpacity,
+            willChange: "opacity",
+            transform: "translateZ(0)"
           }}
         ></motion.div>
         
         <div className="absolute inset-0 bg-black/10"></div>
 
-        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full opacity-[0.15] mix-blend-overlay">
+        {/* Grano de película solo en Desktop para no ralentizar procesadores móviles */}
+        <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="hidden md:block absolute inset-0 w-full h-full opacity-[0.12] mix-blend-overlay pointer-events-none">
           <filter id="noiseFilter">
-            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/>
+            <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" stitchTiles="stitch"/>
           </filter>
           <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
         </svg>
@@ -175,15 +179,15 @@ function App() {
             variants={fadeUpSmooth}
             className="max-w-2xl mx-auto text-center"
           >
-            <div className="h-[110px] mb-8 flex items-center justify-center relative w-full overflow-hidden">
+            <div className="h-[90px] md:h-[110px] mb-8 flex items-center justify-center relative w-full overflow-hidden">
               <AnimatePresence mode="wait">
                 <motion.h2 
                   key={currentLang}
-                  initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
-                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-                  exit={{ opacity: 0, y: -12, filter: "blur(10px)" }}
-                  transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
-                  className="font-serif text-4xl md:text-5xl tracking-wide font-normal text-center absolute w-full"
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-serif text-3xl md:text-5xl tracking-wide font-normal text-center absolute w-full px-4"
                 >
                   {titles[currentLang]}
                 </motion.h2>
@@ -192,7 +196,7 @@ function App() {
             
             <div className="w-px h-16 bg-white/20 mx-auto mb-8"></div>
             
-            <p className="font-sans text-sm md:text-base font-light tracking-widest leading-loose opacity-70 uppercase">
+            <p className="font-sans text-xs md:text-base font-light tracking-widest leading-loose opacity-70 uppercase px-4">
               Nos pasamos el tiempo cazando e importando gorras de alta calidad para que tú no tengas que hacerlo. Nos enfocamos en traer piezas clásicas y diseños difíciles de conseguir para quienes realmente saben de estilo.
               <br/><br/>
               Bajo la filosofía "Grow More. Waste Less.", no seguimos modas rápidas ni acumulamos inventario innecesario. Una selección estricta para quienes valoran los detalles y construyen en silencio.
@@ -210,26 +214,29 @@ function App() {
             className="flex flex-col"
           >
             <div className="px-6 md:px-12 mb-10 flex justify-between items-end">
-              <h2 className="font-serif text-3xl tracking-wider">Cápsula Uno</h2>
-              <span className="font-sans text-xs tracking-[0.2em] opacity-50 uppercase">Desliza para ver</span>
+              <h2 className="font-serif text-2xl md:text-3xl tracking-wider">Cápsula Uno</h2>
+              <span className="font-sans text-[10px] md:text-xs tracking-[0.2em] opacity-50 uppercase">Desliza para ver</span>
             </div>
 
-            {/* Contenedor del Carrusel (Scroll Horizontal Nativo Súper Suave) */}
-            <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 px-6 md:px-12 pb-12 hide-scrollbar" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+            {/* Contenedor del Carrusel (Touch Nativo a 60fps con inercia) */}
+            <div 
+              className="flex overflow-x-auto snap-x snap-mandatory gap-6 px-6 md:px-12 pb-12 hide-scrollbar overscroll-x-contain"
+              style={{ scrollbarWidth: "none", msOverflowStyle: "none", WebkitOverflowScrolling: "touch" }}
+            >
               {caps.map((cap) => (
                 <div 
                   key={cap.id} 
                   className="snap-center shrink-0 w-[85vw] md:w-[400px] flex flex-col group"
                 >
                   {/* Image Container */}
-                  <div className="aspect-[4/5] w-full rounded-sm overflow-hidden relative mb-6 bg-[#0a0f0d] border border-white/10 cursor-pointer transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]">
-                    <img src={cap.img} alt={cap.name} className="absolute inset-0 w-full h-full object-cover z-0 opacity-90 hover:opacity-100 transition-opacity duration-700 ease-out" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] z-10"></div>
+                  <div className="aspect-[4/5] w-full rounded-sm overflow-hidden relative mb-6 bg-[#0a0f0d] border border-white/10 cursor-pointer transition-transform duration-700 hover:scale-[1.02]">
+                    <img src={cap.img} alt={cap.name} loading="lazy" className="absolute inset-0 w-full h-full object-cover z-0 opacity-90 hover:opacity-100 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 md:group-hover:opacity-100 transition-opacity duration-500 z-10"></div>
                     
-                    <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]">
+                    <div className="absolute inset-0 z-20 flex items-center justify-center opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500">
                       <button 
                         onClick={() => addToCart(cap)}
-                        className="bg-white text-black px-8 py-4 rounded-full font-sans text-[10px] tracking-[0.2em] font-bold uppercase hover:bg-black hover:text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center gap-3 transform translate-y-4 group-hover:translate-y-0"
+                        className="bg-white text-black px-6 py-3 md:px-8 md:py-4 rounded-full font-sans text-[10px] tracking-[0.2em] font-bold uppercase hover:bg-black hover:text-white transition-colors duration-300 flex items-center gap-2 md:transform md:translate-y-4 md:group-hover:translate-y-0"
                       >
                         <ShoppingBag size={14} /> Agregar
                       </button>
@@ -304,7 +311,7 @@ function App() {
               <div className="absolute inset-0 z-0 pointer-events-none">
                 <img src="/eugene-golovesov-gcaN9zlPRcY-unsplash.jpg" alt="bg" className="w-full h-full object-cover opacity-80" />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#0a0f0d]/90 via-[#0a0f0d]/40 to-[#0a0f0d]/90"></div>
-                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="absolute inset-0 w-full h-full opacity-10 mix-blend-overlay">
+                <svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" className="hidden md:block absolute inset-0 w-full h-full opacity-10 mix-blend-overlay pointer-events-none">
                   <filter id="noiseFilterCart"><feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/></filter>
                   <rect width="100%" height="100%" filter="url(#noiseFilterCart)"/>
                 </svg>
