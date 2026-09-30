@@ -1,27 +1,27 @@
-﻿import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import { ShoppingBag, X, Minus, Plus } from "lucide-react";
 
 const caps = [
   {
     id: 1,
-    name: "SCUDERIA FERRARI",
+    name: "PUMA x FERRARI",
     price: "$25",
-    desc: "Colaboración oficial Puma. Estructura de seis paneles con escudo clásico frontal y acentos en rojo corsa.",
+    desc: "Colaboración oficial Puma Motorsport. Estructura de seis paneles con escudo clásico frontal y acentos en rojo corsa.",
     img: "/photo_2026-09-28_14-49-19.jpg"
   },
   {
     id: 2,
-    name: "COACH SIGNATURE",
+    name: "COACH MONOGRAM",
     price: "$25",
-    desc: "Patrón monograma clásico en lona jacquard premium. Ribete de cuero y herraje metálico oscuro.",
+    desc: "Patrón monograma clásico en lona jacquard. Ribete de cuero negro y herraje metálico oscuro.",
     img: "/photo_2026-09-28_14-49-22.jpg"
   },
   {
     id: 3,
-    name: "BASS PRO CAMO",
+    name: "BASS PRO SHOPS",
     price: "$25",
-    desc: "Silueta clásica con panel de malla. Diseño con parche bordado frontal y patrón camuflado oscuro.",
+    desc: "Silueta trucker clásica con malla transpirable. Icónico parche bordado frontal y camuflaje oscuro.",
     img: "/photo_2026-09-28_13-25-21.jpg"
   }
 ];
