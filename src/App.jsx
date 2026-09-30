@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import { ShoppingBag, X, Minus, Plus } from "lucide-react";
 
 const caps = [
@@ -75,7 +75,7 @@ function App() {
   useEffect(() => {
     const interval = setInterval(() => {
       setLangIndex((prev) => (prev + 1) % langs.length);
-    }, 2500); // Cambia cada 2.5 segundos
+    }, 3600); // 3.6s para que respire con calma
     return () => clearInterval(interval);
   }, []);
 
@@ -87,18 +87,24 @@ function App() {
     jp: <>厳選されたヘッドウェア。<br/><span className="italic opacity-80">一点物のピース。</span></>
   };
   
-  // Transición MUY suave para el desenfoque del fondo (de 0 a 800px de scroll)
-  const sharpOpacity = useTransform(scrollY, [0, 800], [1, 0]);
+  // Física de inercia líquida (ultra-smooth scroll spring)
+  const smoothScrollY = useSpring(scrollY, { stiffness: 45, damping: 25, restDelta: 0.001 });
+  const sharpOpacity = useTransform(smoothScrollY, [0, 950], [1, 0]);
 
   const handleBuy = (capName) => {
     const msg = `¡Hola Richi! 🌱 Quiero apartar la gorra ${capName} de la colección SHi-TO.`;
     window.open(`https://wa.me/584161437190?text=${encodeURIComponent(msg)}`, "_blank");
   };
 
-  // Variantes de animación súper suaves
+  // Variantes de animación ultra-suaves con desenfoque progresivo de 1.8 segundos
   const fadeUpSmooth = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.25, 0.1, 0.25, 1] } }
+    hidden: { opacity: 0, y: 50, filter: "blur(8px)" },
+    visible: { 
+      opacity: 1, 
+      y: 0, 
+      filter: "blur(0px)",
+      transition: { duration: 1.8, ease: [0.16, 1, 0.3, 1] } 
+    }
   };
 
   return (
@@ -169,10 +175,19 @@ function App() {
             variants={fadeUpSmooth}
             className="max-w-2xl mx-auto text-center"
           >
-            <div className="h-[100px] mb-8 flex items-center justify-center">
-              <h2 className="font-serif text-4xl md:text-5xl tracking-wide font-normal text-center w-full">
-                {titles[currentLang]}
-              </h2>
+            <div className="h-[110px] mb-8 flex items-center justify-center relative w-full overflow-hidden">
+              <AnimatePresence mode="wait">
+                <motion.h2 
+                  key={currentLang}
+                  initial={{ opacity: 0, y: 12, filter: "blur(10px)" }}
+                  animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
+                  exit={{ opacity: 0, y: -12, filter: "blur(10px)" }}
+                  transition={{ duration: 1.4, ease: [0.16, 1, 0.3, 1] }}
+                  className="font-serif text-4xl md:text-5xl tracking-wide font-normal text-center absolute w-full"
+                >
+                  {titles[currentLang]}
+                </motion.h2>
+              </AnimatePresence>
             </div>
             
             <div className="w-px h-16 bg-white/20 mx-auto mb-8"></div>
@@ -207,14 +222,14 @@ function App() {
                   className="snap-center shrink-0 w-[85vw] md:w-[400px] flex flex-col group"
                 >
                   {/* Image Container */}
-                  <div className="aspect-[4/5] w-full rounded-sm overflow-hidden relative mb-6 bg-[#0a0f0d] border border-white/10 cursor-pointer transition-transform duration-700 hover:scale-[1.02]">
-                    <img src={cap.img} alt={cap.name} className="absolute inset-0 w-full h-full object-cover z-0 opacity-90 hover:opacity-100 transition-opacity duration-500" />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 z-10"></div>
+                  <div className="aspect-[4/5] w-full rounded-sm overflow-hidden relative mb-6 bg-[#0a0f0d] border border-white/10 cursor-pointer transition-transform duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-[1.02]">
+                    <img src={cap.img} alt={cap.name} className="absolute inset-0 w-full h-full object-cover z-0 opacity-90 hover:opacity-100 transition-opacity duration-700 ease-out" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] z-10"></div>
                     
-                    <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-700">
+                    <div className="absolute inset-0 z-20 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]">
                       <button 
                         onClick={() => addToCart(cap)}
-                        className="bg-white text-black px-8 py-4 rounded-full font-sans text-[10px] tracking-[0.2em] font-bold uppercase hover:bg-black hover:text-white transition-colors flex items-center gap-3 transform translate-y-4 group-hover:translate-y-0 duration-700"
+                        className="bg-white text-black px-8 py-4 rounded-full font-sans text-[10px] tracking-[0.2em] font-bold uppercase hover:bg-black hover:text-white transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center gap-3 transform translate-y-4 group-hover:translate-y-0"
                       >
                         <ShoppingBag size={14} /> Agregar
                       </button>
@@ -274,14 +289,15 @@ function App() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
+              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
               onClick={() => setIsCartOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50"
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
             />
             <motion.div 
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.4, ease: "circOut" }}
+              transition={{ duration: 0.85, ease: [0.16, 1, 0.3, 1] }}
               className="fixed top-0 right-0 h-full w-[90vw] md:w-[400px] bg-[#0a0f0d] border-l border-white/10 z-50 flex flex-col shadow-2xl overflow-hidden"
             >
               {/* Aesthetic Background inside Cart */}
