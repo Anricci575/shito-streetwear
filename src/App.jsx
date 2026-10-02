@@ -115,7 +115,7 @@ function App() {
         <div 
           className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ 
-            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg")`, 
+            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg?v=2")`, 
             filter: "blur(14px)",
             transform: "translateZ(0)"
           }}
@@ -125,7 +125,7 @@ function App() {
         <motion.div 
           className="absolute inset-0 bg-cover bg-center scale-105"
           style={{ 
-            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg")`, 
+            backgroundImage: `url("/duy-thanh-nguyen-j59gWjERqZg-unsplash333.jpg?v=2")`, 
             opacity: sharpOpacity,
             willChange: "opacity",
             transform: "translateZ(0)"
